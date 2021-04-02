@@ -5,7 +5,7 @@ import os
 import torch
 from VDSR_model import VDSR, Conv_ReLU_Block
 from RDN_model import RDB_conv, RDN, RDB
-from DRRN_B1U25 import drrn
+
 
 '''目标：1、输入路径和模型，可以自动对set5图片集进行分割和SR处理，并计算整体平均psnr(不同的scale)和bicubic对比
          2、可以显示指定图片的处理结果（原图、Bicubic、VDSR对比）

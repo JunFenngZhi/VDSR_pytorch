@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader
 import torch.utils.data as data
 import torchsummary
 from VDSR_model import VDSR
-from RDN_model import RDN
+
 
 '''RDN和VDSR区别：使用L1_loss,不用梯度裁剪，学习率基本不衰减，使用adam优化器,batch_size增大'''
 
@@ -83,8 +83,8 @@ def adjust_learning_rate(optimizer, epoch):
     return lr
 
 def train(training_data_loader, optimizer, model, criterion, epoch):
-    #current_lr = adjust_learning_rate(optimizer, epoch-1)  # 调整学习率
-    #print("Epoch = {}, lr = {}".format(epoch, optimizer.param_groups[0]["lr"]))
+    current_lr = adjust_learning_rate(optimizer, epoch-1)  # 调整学习率
+    print("Epoch = {}, lr = {}".format(epoch, optimizer.param_groups[0]["lr"]))
     model.train()  # 将module设置为training mode，允许权值更新
 
     for iteration, batch in enumerate(training_data_loader, 1):  # 这里的1是为了让iteration的值从1开始
@@ -150,24 +150,22 @@ if __name__ == '__main__':
 
 
     print("===> Building model")
-    #model = VDSR()
-    model = RDN(D=10, C=3, G=32, G0=64, input_channels=1, output_channels=1)
+    model = VDSR()
 
 
-    #criterion = nn.MSELoss(reduction='sum')  # 计算的是整个batch所有图像的mse_loss的总和  (L2_loss)
-    criterion = nn.L1Loss(reduction='sum')  # RDN使用的是L1_loss
+    criterion = nn.MSELoss(reduction='sum')  # 计算的是整个batch所有图像的mse_loss的总和  (L2_loss)
     if CUDA:
         model = model.cuda()
         criterion = criterion.cuda()
 
     torchsummary.summary(model, input_size=INPUT_SIZE)  # 显示模型结构和参数
     print("===> Setting Optimizer")
-    #optimizer = optim.SGD(model.parameters(), lr=LR, momentum=MOMENTUM, weight_decay=WEIGHT_DECAY)
-    optimizer = optim.Adam(model.parameters(), lr=1e-4)
+    optimizer = optim.SGD(model.parameters(), lr=LR, momentum=MOMENTUM, weight_decay=WEIGHT_DECAY)
+
 
     print("===> Training")  # 模型训练固定个epoch
     for epoch in range(1, EPOCHS+1):
         train(training_data_loader, optimizer, model, criterion, epoch)
         val(val_data_loader, model, epoch)
-        #torch.save(model, MODEL_PATH+'_'+str(epoch)+'.pth')
+        torch.save(model, MODEL_PATH+'_'+str(epoch)+'.pth')
 

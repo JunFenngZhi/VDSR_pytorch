@@ -174,11 +174,6 @@ train_data.generate_data(scale=[2, 3, 4],downsize=[1, 0.7, 0.5])
 
 
 
-'''
-UAV无人机数据集划分： 
-42-train, 12—val， 6—test
-downsize=5  降低数据量至40w+ 
-'''
 
 
 
